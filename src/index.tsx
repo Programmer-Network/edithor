@@ -115,7 +115,7 @@ export default class Edithor extends Component<EdithorProps, EdithorComponentSta
 
         // this is what the "difficult" task will be, mostly due to performance concerns
 
-        const beforeHtmlEntitiesRules = this.state?.rules.filter((rule) => rule.conditions.beforeHtmlEntities);
+        const beforeHtmlEntitiesRules = this.state?.rules.filter((rule) => !!rule.conditions?.beforeHtmlEntities);
         beforeHtmlEntitiesRules.forEach((rule) => processed = rule.process(processed));
 
         // this turns _every non-digit/English alphabetic_ character into a HTML entity
@@ -130,7 +130,7 @@ export default class Edithor extends Component<EdithorProps, EdithorComponentSta
             c => "&#" + c.charCodeAt(0) + ";"
         );
 
-        const afterHtmlEntitiesRules = this.state?.rules.filter((rule) => !rule.conditions.beforeHtmlEntities);
+        const afterHtmlEntitiesRules = this.state?.rules.filter((rule) => !rule.conditions?.beforeHtmlEntities);
         afterHtmlEntitiesRules.forEach((rule) => processed = rule.process(processed));
 
         // once it's processed, pass it over to our child components - as props

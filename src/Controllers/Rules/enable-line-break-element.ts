@@ -10,7 +10,8 @@ export default class EnableLineBreakElements implements EdithorRule {
         const carriageReturn = `&#${'\r'.charCodeAt(0)};`;
         const lineFeed = `&#${'\n'.charCodeAt(0)};`;
         
-        return input.replaceAll(carriageReturn + lineFeed, lineFeed).replaceAll(lineFeed, '<br/>');
+        // appended line feed is required for post HTML entity encoded rules
+        return input.replaceAll(carriageReturn + lineFeed, lineFeed).replaceAll(lineFeed, '<br/>\n'); 
     };
 };
 
