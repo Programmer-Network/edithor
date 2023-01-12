@@ -2,7 +2,7 @@ import EdithorRule from "../../Types/EdithorRule";
 import EdithorRuleStates from "../../Types/EdithorRuleStates";
 
 type EnableHeaderElementsOptions = {
-    character?: string,
+    syntax?: string,
     minimumDepth?: number,
     maximumDepth?: number
 };
@@ -17,17 +17,17 @@ export default class EnableHeaderElements implements EdithorRule {
     conditions: EdithorRuleStates;
 
     process(input: string): string {
-        const character = `&#${(this.options?.character ?? '#').charCodeAt(0)};`;
+        const syntax = `&#${(this.options?.syntax ?? '#').charCodeAt(0)};`;
         const minimumDepth = this.options?.minimumDepth ?? 1;
         const maximumDepth = this.options?.maximumDepth ?? 6;
 
         for(let depth = maximumDepth; depth != minimumDepth - 1; depth--) {
-            const syntax = Array(depth).fill(character).join('');
+            const depthSyntax = Array(depth).fill(syntax).join('');
 
-            if(!input.includes(syntax))
+            if(!input.includes(depthSyntax))
                 continue;
 
-            const regExp = new RegExp(`${syntax} (.*)`, 'g');
+            const regExp = new RegExp(`${depthSyntax} (.*)`, 'g');
             input = input.replaceAll(regExp, `<h${depth}>$1</h${depth}>`);
         }
 
