@@ -27,7 +27,7 @@ export default class EnableHeaderElements implements EdithorRule {
             if(!input.includes(depthSyntax))
                 continue;
 
-            const regExp = new RegExp(`${depthSyntax} (.*)`, 'g');
+            const regExp = new RegExp(`^${depthSyntax}\\s(.*)$`, 'gm');
             input = input.replaceAll(regExp, `<h${depth}>$1</h${depth}>`);
         }
 

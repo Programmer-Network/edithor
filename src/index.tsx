@@ -62,33 +62,35 @@ export default class Edithor extends Component<EdithorProps, EdithorComponentSta
     rulesDidUpdate() {
         const timestamp = performance.now();
 
-        const rulesKeys: string[] = Object.keys(Rules);
-        const filteredRulesKeys: string[] = rulesKeys.filter((rule: string) => {
-            if(this.props.rules[rule] === undefined)
+        const filteredRules: { key, value }[] = Rules.filter(({ key, value }) => {
+            if(!this.props.rules)
                 return true;
 
-            const type: string = typeof this.props.rules[rule];
+            if(this.props.rules[key] === undefined)
+                return true;
+
+            const type: string = typeof this.props.rules[key];
 
             if(type === "boolean")
-                return !!this.props.rules[rule];
+                return !!this.props.rules[key];
 
             if(type === "object")
-                return this.props.rules[rule]["enabled"];
+                return this.props.rules[key]["enabled"];
 
             // we should never get to this state, and it's only possible in regular js
-            throw new Error(`Edithor rule ${rule} has an invalid value type of ${type}.`);
+            throw new Error(`Edithor rule ${key} has an invalid value type of ${type}.`);
         });
 
-        this.props.debug && console.debug("Edithor enabled rules: ", filteredRulesKeys);
+        this.props.debug && console.debug("Edithor enabled rules: ", filteredRules);
 
         // intialize the rules and then emulate an input change to cause a refresh in the child components
         // because the child components are not aware of the rules.
 
         this.setState({
-            rules: filteredRulesKeys.map((rule) => {
-                const options = (typeof this.props.rules[rule] === "object")?(this.props.rules[rule]):({});
+            rules: filteredRules.map(({ key, value }) => {
+                const options = (this.props.rules && typeof this.props.rules[key] === "object")?(this.props.rules[key]):(null);
 
-                return new Rules[rule](options);
+                return new value(options);
             })
         }, () => {
             this.props.debug === "all" && console.debug("Edithor processing rules:", performance.now() - timestamp);

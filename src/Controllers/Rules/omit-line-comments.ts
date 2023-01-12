@@ -2,7 +2,7 @@ import EdithorRule from "../../Types/EdithorRule";
 import EdithorRuleStates from "../../Types/EdithorRuleStates";
 
 type OmitLineCommentsOptions = {
-    regex: RegExp
+    regex?: RegExp
 };
 
 export default class OmitLineComments implements EdithorRule {
@@ -18,7 +18,7 @@ export default class OmitLineComments implements EdithorRule {
     };
 
     process(input: string): string {
-        return input.replaceAll(this.options.regex ?? /\<!--(.*?)-->/gs, '');
+        return input.replaceAll(this.options?.regex ?? /\<!--(.*?)-->/gs, '');
     };
 };
 
