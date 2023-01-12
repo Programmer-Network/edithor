@@ -1,14 +1,14 @@
 import EdithorRule from "../../Types/EdithorRule";
 import EdithorRuleStates from "../../Types/EdithorRuleStates";
 
-type EmitLineCommentsOptions = {
+type OmitLineCommentsOptions = {
     regex: RegExp
 };
 
-export default class EmitLineComments implements EdithorRule {
-    options: EmitLineCommentsOptions;
+export default class OmitLineComments implements EdithorRule {
+    options: OmitLineCommentsOptions;
     
-    constructor(options?: EmitLineCommentsOptions) {
+    constructor(options?: OmitLineCommentsOptions) {
         this.options = options;
     };
 

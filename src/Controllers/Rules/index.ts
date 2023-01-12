@@ -1,14 +1,10 @@
-import EmitLineComments from "./emit-line-comments";
+import OmitLineComments from "./omit-line-comments";
 import EnableLineBreakElements from "./enable-line-break-element";
 
-// with consideration that default value of unset values will be undefined
-// all names should indicate an enablement of the disabled value and the negative
-// value should indicate the default behaviour to avoid bad checks
-
-// (bad) omit-full-line-comments (default undefined, false):  enabled !== undefined && enabled === false
-// (good) emit-full-line-comments (default undefined, false): enabled === true
+// with consideration that default value of unset values will be "enabled" (true)
+// all names should indicate an enablement of the rule where false disables the rule
 
 export default {
-    "emit-line-comments": EmitLineComments,
+    "omit-line-comments": OmitLineComments,
     "enable-line-break-element": EnableLineBreakElements
 };
