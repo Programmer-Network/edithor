@@ -1,5 +1,6 @@
 import OmitLineComments from "./omit-line-comments";
 import EnableLineBreakElements from "./enable-line-break-element";
+import EnableThematicBreakElements from "./enable-thematic-break-elements";
 import EnableHeaderElements from "./enable-header-elements";
 import EnableBoldAndItalicElements from "./enable-bold-and-italic-elements";
 import EnableBoldElements from "./enable-bold-elements";
@@ -18,11 +19,12 @@ import EnableBlockquoteElements from "./enable-blockquote-elements";
 
 export default [
     { key: "enable-line-break-element",         value: EnableLineBreakElements      },
+    { key: "enable-header-elements",            value: EnableHeaderElements         },
     { key: "enable-bold-and-italic-elements",   value: EnableBoldAndItalicElements  },
     { key: "enable-bold-elements",              value: EnableBoldElements           },
     { key: "enable-strikethrough-elements",     value: EnableStrikethroughElements  },
     { key: "enable-italic-elements",            value: EnableItalicElements         },
-    { key: "enable-header-elements",            value: EnableHeaderElements         },
     { key: "enable-blockquote-elements",        value: EnableBlockquoteElements     },
+    { key: "enable-thematic-break-element",     value: EnableThematicBreakElements  },
     { key: "omit-line-comments",                value: OmitLineComments             }
 ];
