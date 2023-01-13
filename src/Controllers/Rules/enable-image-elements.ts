@@ -1,9 +1,9 @@
 import EdithorRule from "../../Types/EdithorRule";
-import EdithorRuleStates from "../../Types/EdithorRuleStates";
+import EdithorRuleConditions from "../../Types/EdithorRuleConditions";
 import Utils from "../Utils";
 
 export default class EnableImageElements implements EdithorRule {
-    conditions: EdithorRuleStates = {
+    conditions: EdithorRuleConditions = {
         codeBlock: false
     };
 

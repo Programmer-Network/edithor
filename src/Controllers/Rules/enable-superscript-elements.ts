@@ -1,5 +1,5 @@
 import EdithorRule from "../../Types/EdithorRule";
-import EdithorRuleStates from "../../Types/EdithorRuleStates";
+import EdithorRuleConditions from "../../Types/EdithorRuleConditions";
 import Utils from "../Utils";
 
 type EnableSuperscriptElementsOptions = {
@@ -13,7 +13,7 @@ export default class EnableSuperscriptElements implements EdithorRule {
         this.options = options;
     };
 
-    conditions: EdithorRuleStates;
+    conditions: EdithorRuleConditions;
 
     process(input: string): string {
         let syntax = this.options?.syntax ?? [ { opening: "<sup>", closing: "</sup>" } ];

@@ -1,8 +1,8 @@
 import EdithorRule from "../../Types/EdithorRule";
-import EdithorRuleStates from "../../Types/EdithorRuleStates";
+import EdithorRuleConditions from "../../Types/EdithorRuleConditions";
 
 export default class EnableLineBreakElements implements EdithorRule {
-    conditions: EdithorRuleStates = {
+    conditions: EdithorRuleConditions = {
         codeBlock: false
     };
 

@@ -11,8 +11,9 @@ import EnableSubscriptElements from "./enable-subscript-elements";
 import EnableBlocklistElements from "./enable-blocklist-elements";
 import EnableBlocklistOrderedElements from "./enable-blocklist-ordered-elements";
 import EnableBlockquoteElements from "./enable-blockquote-elements";
+import EnableCodeblockElements from "./enable-codeblock-elements";
 import EnableLinkElements from "./enable-link-elements";
-import EnableImageElements from "./enable-image-elements";
+import EnableImageElements from "./enable-image-elements"
 
 // with consideration that default value of unset values will be "enabled" (true)
 // all names should indicate an enablement of the rule where false disables the rule
@@ -36,6 +37,7 @@ export default [
     { key: "enable-blocklist-elements",         value: EnableBlocklistElements          },
     { key: "enable-blocklist-ordered-elements", value: EnableBlocklistOrderedElements   },
     { key: "enable-blockquote-elements",        value: EnableBlockquoteElements         },
+    { key: "enable-codeblock-elements",         value: EnableCodeblockElements          },
     { key: "enable-image-elements",             value: EnableImageElements              },
     { key: "enable-link-elements",              value: EnableLinkElements               },
     { key: "omit-line-comments",                value: OmitLineComments                 },

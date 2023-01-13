@@ -1,7 +1,8 @@
-import EdithorRuleStates from "./EdithorRuleStates"
+import EdithorRuleConditions from "./EdithorRuleConditions"
+import EdithorRuleState from "./EdithorRuleState"
 
 export default interface EdithorRule {    
-    conditions: EdithorRuleStates,
+    conditions: EdithorRuleConditions,
 
-    process(input: string): string
+    process(input: string, state?: EdithorRuleState): string
 };

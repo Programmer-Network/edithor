@@ -1,5 +1,5 @@
 import EdithorRule from "../../Types/EdithorRule";
-import EdithorRuleStates from "../../Types/EdithorRuleStates";
+import EdithorRuleConditions from "../../Types/EdithorRuleConditions";
 import Utils from "../Utils";
 
 type EnableHeaderElementsOptions = {
@@ -15,7 +15,7 @@ export default class EnableHeaderElements implements EdithorRule {
         this.options = options;
     };
 
-    conditions: EdithorRuleStates;
+    conditions: EdithorRuleConditions;
 
     process(input: string): string {
         const syntax = this.options?.syntax ?? '#';

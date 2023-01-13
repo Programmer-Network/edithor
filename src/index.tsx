@@ -1,10 +1,11 @@
-import React, { Component, ReactNode } from "react";
+import React, { Component } from "react";
 import Editor from "./Components/Editor";
 import Renderer from "./Components/Renderer";
 import EdithorRule from "./Types/EdithorRule";
 import Rules from "./Controllers/Rules";
 
 import "./polyfill.js";
+import Highlighter from "./Controllers/Highlighter";
 
 type EdithorProps = {
     input: string,
@@ -40,7 +41,7 @@ export default class Edithor extends Component<EdithorProps, EdithorComponentSta
     rules: EdithorRule[];
 
     componentDidMount(): void {
-        this.rulesDidUpdate();
+        Highlighter.getHighlighterAsync().then(() => this.rulesDidUpdate());
     };
 
     componentDidUpdate(previousProps: Readonly<EdithorProps>): void {
@@ -119,8 +120,6 @@ export default class Edithor extends Component<EdithorProps, EdithorComponentSta
 
         const raw = this.props.input;
 
-        let processed:string = raw;
-
         // here we would implement our custom logic to set the "rules" state
         // e.g. define that we're in a code block now
 
@@ -132,27 +131,133 @@ export default class Edithor extends Component<EdithorProps, EdithorComponentSta
 
         // this is what the "difficult" task will be, mostly due to performance concerns
 
-        const beforeHtmlEntitiesRules = this.state?.rules.filter((rule) => !!rule.conditions?.beforeHtmlEntities);
-        beforeHtmlEntitiesRules.forEach((rule) => processed = rule.process(processed));
+        const sections = [];
 
-        // this turns _every non-digit/English alphabetic_ character into a HTML entity
-        // this is perfectly reasonable. it will not affect network bandwidth - this is client code
-        // and it's a perfect XSS prevention.
+        let text = raw.replaceAll('\r', ''), newLine = true, codeBlock = false, codeSyntax;
 
-        // in all our rules, because of this, we use the HTML entities to decode character
-        // such as line feeds (\n) and carriage returns (\r)
+        for(let index = 0; index < text.length; index++) {
+            if(newLine) {
+                newLine = false;
 
-        processed = processed.replaceAll(
-            /[^0-9A-Za-z ]/g,
-            c => "&#" + c.charCodeAt(0) + ";"
-        );
+                if(text.substring(index, index + 3) === '```') {
+                    if(!codeBlock) {
+                        sections.push({
+                            codeBlock,
+                            text: text.substring(0, index)
+                        });
 
-        const afterHtmlEntitiesRules = this.state?.rules.filter((rule) => !rule.conditions?.beforeHtmlEntities);
-        afterHtmlEntitiesRules.forEach((rule) => {
-            console.log(rule);
-            
-            processed = rule.process(processed);
+                        codeBlock = true;
+
+                        text = text.substring(index + 3, text.length);
+                        index = 0;
+                        
+                        for(let newLineIndex = 0; newLineIndex < text.length; newLineIndex++) {
+                            if(text[newLineIndex] === '\n') {
+                                codeSyntax = text.substring(0, newLineIndex);
+                                text = text.substring(newLineIndex, text.length);
+
+                                break;
+                            }
+                        }
+                    }
+                    else {
+                        sections.push({
+                            codeBlock,
+                            codeSyntax,
+                            text: text.substring(0, index)
+                        });
+
+                        codeBlock = false;
+
+                        text = text.substring(index + 3, text.length);
+                        index = 0;
+                    }
+                }
+            }
+
+            if(text[index] === '\n')
+                newLine = true;
+        }
+
+        if(text.length !== 0) {
+            sections.push({
+                codeBlock: false,
+                text
+            });
+        }
+
+        const missingCodeSyntax: string[] = [];
+
+        const processed = sections.map((section) => {
+            let processed: string = section.text;
+
+            if(section.codeBlock) {
+                if(section.codeSyntax.length === 0)
+                    section.codeSyntax = "txt";
+
+                if(!Highlighter.hasSyntax(section.codeSyntax)) {
+                    Highlighter.holdSyntax(section.codeSyntax);
+
+                    missingCodeSyntax.push(section.codeSyntax);
+
+                    console.log("missing syntax " + section.codeSyntax);
+
+                    section.codeSyntax = "txt";
+                }
+                else
+                    section.codeSyntax = Highlighter.getSyntax(section.codeSyntax);
+            }
+
+            let rules = this.state?.rules.filter((rule) => {
+                if(!!rule.conditions?.beforeHtmlEntities === false)
+                    return false;
+
+                if(!!rule.conditions?.codeBlock !== section.codeBlock)
+                    return false;
+
+                return true;
+            });
+
+            rules.forEach((rule) => processed = rule.process(processed, section));
+
+            // this turns _every non-digit/English alphabetic_ character into a HTML entity
+            // this is perfectly reasonable. it will not affect network bandwidth - this is client code
+            // and it's a perfect XSS prevention.
+
+            // in all our rules, because of this, we use the HTML entities to decode character
+            // such as line feeds (\n) and carriage returns (\r)
+
+            // we'll skip code blocks for this
+
+            if(!section.codeBlock) {
+                processed = processed.replaceAll(
+                    /[^0-9A-Za-z ]/g,
+                    c => "&#" + c.charCodeAt(0) + ";"
+                );
+            }
+
+            rules = this.state?.rules.filter((rule) => {
+                if(!!rule.conditions?.beforeHtmlEntities === true)
+                    return false;
+
+                if(!!rule.conditions?.codeBlock !== section.codeBlock)
+                    return false;
+
+                return true;
+            });
+
+            rules.forEach((rule) => processed = rule.process(processed, section));
+
+            return processed;
         });
+
+        if(missingCodeSyntax.length) {
+            Promise.all(missingCodeSyntax.map(async (syntax: string) => {
+                await Highlighter.getSyntaxAsync(syntax);
+            })).then(() => {
+                this.inputDidUpdate();
+            });
+        }
 
         // once it's processed, pass it over to our child components - as props
         // see comments at the top about the child components not being in control of the Edithor™ states
@@ -160,7 +265,7 @@ export default class Edithor extends Component<EdithorProps, EdithorComponentSta
         this.setState({
             edithor: {
                 raw: this.props.input,
-                processed
+                processed: processed.join('')
             }
         }, () => {
             this.props.debug === "all" && console.debug("Edithor processing input:", performance.now() - timestamp);
