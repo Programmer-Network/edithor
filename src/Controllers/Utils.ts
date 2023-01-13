@@ -2,8 +2,12 @@ export default class Utils {
     static getEncodedString(text: string): string {
         let result = "";
 
-        for(let index = 0; index < text.length; index++)
-            result += `&#${text[index].charCodeAt(0)};`;
+        for(let index = 0; index < text.length; index++) {
+            if(text[index].toLowerCase() !== text[index].toUpperCase())
+                result += text[index];
+            else
+                result += `&#${text[index].charCodeAt(0)};`;
+        }
 
         return result;
     };
@@ -85,18 +89,39 @@ export default class Utils {
         return haystack;
     };
 
-    static replaceWrappedTags(haystack: string, syntax: string | string[], opening: string, closing: string = opening): string {
+    static replaceWrappedTags(haystack: string, syntax: string | (string | object)[], opening: string, closing: string = opening): string {
         if(typeof syntax === "string")
             syntax = [ syntax as string ];
+        
+        console.log(haystack);
 
         for(let index = 0; index < syntax.length; index++) {
-            const encodedSyntax = this.getEncodedString(syntax[index]);
+            const currentSyntax = syntax[index];
 
-            if(!haystack.includes(encodedSyntax))
-                continue;
+            if(typeof currentSyntax === "object") {
+                const encodedOpeningSyntax = this.getEncodedString(currentSyntax["opening"]);
+                const encodedClosingSyntax = this.getEncodedString(currentSyntax["closing"]);
+    
+                if(!haystack.includes(encodedOpeningSyntax))
+                    continue;
 
-            const regExp = new RegExp(`${encodedSyntax}(.*?)${encodedSyntax}`, 'gs');
-            haystack = haystack.replaceAll(regExp, `${opening}$1${closing}`);
+                if(!haystack.includes(encodedClosingSyntax))
+                    continue;
+
+                console.log(encodedClosingSyntax);
+    
+                const regExp = new RegExp(`${encodedOpeningSyntax}(.*?)${encodedClosingSyntax}`, 'gs');
+                haystack = haystack.replaceAll(regExp, `${opening}$1${closing}`);
+            }
+            else {
+                const encodedSyntax = this.getEncodedString(currentSyntax);
+
+                if(!haystack.includes(encodedSyntax))
+                    continue;
+
+                const regExp = new RegExp(`${encodedSyntax}(.*?)${encodedSyntax}`, 'gs');
+                haystack = haystack.replaceAll(regExp, `${opening}$1${closing}`);
+            }
         }
 
         return haystack;

@@ -6,6 +6,8 @@ import EnableBoldAndItalicElements from "./enable-bold-and-italic-elements";
 import EnableBoldElements from "./enable-bold-elements";
 import EnableItalicElements from "./enable-italic-elements";
 import EnableStrikethroughElements from "./enable-strikethrough-elements";
+import EnableSuperscriptElements from "./enable-superscript-elements";
+import EnableSubscriptElements from "./enable-subscript-elements";
 import EnableBlockquoteElements from "./enable-blockquote-elements";
 
 // with consideration that default value of unset values will be "enabled" (true)
@@ -26,5 +28,7 @@ export default [
     { key: "enable-italic-elements",            value: EnableItalicElements         },
     { key: "enable-blockquote-elements",        value: EnableBlockquoteElements     },
     { key: "enable-thematic-break-element",     value: EnableThematicBreakElements  },
+    { key: "enable-superscript-element",        value: EnableSuperscriptElements    },
+    { key: "enable-subscript-element",          value: EnableSubscriptElements      },
     { key: "omit-line-comments",                value: OmitLineComments             }
 ];
