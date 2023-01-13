@@ -25,8 +25,6 @@ export default class EnableHeaderElements implements EdithorRule {
         for(let depth = maximumDepth; depth != minimumDepth - 1; depth--) {
             const depthSyntax = Array(depth).fill(syntax).join('');
 
-            console.log(depthSyntax);
-
             input = Utils.replaceStartingTag(input, depthSyntax, `<h${depth}>`, `</h${depth}>`);
         }
 
