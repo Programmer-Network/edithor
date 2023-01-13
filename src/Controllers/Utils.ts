@@ -1,15 +1,24 @@
 export default class Utils {
+    static getDecodedString(text: string): string {
+        return text.replaceAll(/&#([0-9]*);/g, (match, character) => {
+            return String.fromCharCode(character);
+        });
+    };
+
     static getEncodedString(text: string): string {
         let result = "";
 
-        for(let index = 0; index < text.length; index++) {
-            if(text[index].toLowerCase() !== text[index].toUpperCase())
-                result += text[index];
-            else
-                result += `&#${text[index].charCodeAt(0)};`;
-        }
+        for(let index = 0; index < text.length; index++)
+            result += this.getEncodedCharacter(text[index]);
 
         return result;
+    };
+
+    static getEncodedCharacter(character: string): string {
+        if(character.toLowerCase() !== character.toUpperCase())
+            return character;
+
+        return `&#${character.charCodeAt(0)};`;
     };
 
     static replaceStartingBlockTag(haystack: string, syntax: string | string[], opening: string, closing: string = opening, wrapOpening: string = "", wrapClosing: string = ""): string {
