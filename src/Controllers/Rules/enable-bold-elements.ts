@@ -16,7 +16,7 @@ export default class EnableBoldElements implements EdithorRule {
     conditions: EdithorRuleStates;
 
     process(input: string): string {
-        let syntax = this.options?.syntax ?? [ "**", "____" ];
+        let syntax = this.options?.syntax ?? [ "**" ];
 
         return Utils.replaceWrappedTags(input, syntax, "<b>", "</b>");
     };

@@ -15,15 +15,6 @@ export default class EnableBlockquoteElements implements EdithorRule {
 
     conditions: EdithorRuleStates;
 
-    getEncodedString(text: string): string {
-        let result = "";
-
-        for(let index = 0; index < text.length; index++)
-            result += `&#${text[index].charCodeAt(0)};`;
-
-        return result;
-    };
-
     process(input: string): string {
         let syntax = this.options?.syntax ?? [ '>' ];
 

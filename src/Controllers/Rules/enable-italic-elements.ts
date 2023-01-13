@@ -14,10 +14,10 @@ export default class EnableItalicElements implements EdithorRule {
     };
 
     conditions: EdithorRuleStates;
-
+    
     process(input: string): string {
         let syntax = this.options?.syntax ?? [ "*", "_" ];
-
+        
         return Utils.replaceWrappedTags(input, syntax, "<i>", "</i>");
     };
 };

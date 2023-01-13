@@ -66,16 +66,24 @@ export default class Edithor extends Component<EdithorProps, EdithorComponentSta
             if(!this.props.rules)
                 return true;
 
-            if(this.props.rules[key] === undefined)
-                return true;
+            let rule = null;
 
-            const type: string = typeof this.props.rules[key];
+            if(this.props.rules[key] === undefined) {
+                if(this.props.rules["*"] === undefined)
+                    return true;
+
+                rule = this.props.rules["*"];
+            }
+            else
+                rule = this.props.rules[key];
+
+            const type: string = typeof rule;
 
             if(type === "boolean")
-                return !!this.props.rules[key];
+                return !!rule;
 
             if(type === "object")
-                return this.props.rules[key]["enabled"];
+                return rule["enabled"];
 
             // we should never get to this state, and it's only possible in regular js
             throw new Error(`Edithor rule ${key} has an invalid value type of ${type}.`);
@@ -88,7 +96,14 @@ export default class Edithor extends Component<EdithorProps, EdithorComponentSta
 
         this.setState({
             rules: filteredRules.map(({ key, value }) => {
-                const options = (this.props.rules && typeof this.props.rules[key] === "object")?(this.props.rules[key]):(null);
+                let options = null;
+                
+                if(this.props.rules) {
+                    if(typeof this.props.rules[key] === "object")
+                        options = this.props.rules[key];
+                    else 
+                        options = this.props.rules["*"] ?? null;
+                }
 
                 return new value(options);
             })
@@ -133,7 +148,11 @@ export default class Edithor extends Component<EdithorProps, EdithorComponentSta
         );
 
         const afterHtmlEntitiesRules = this.state?.rules.filter((rule) => !rule.conditions?.beforeHtmlEntities);
-        afterHtmlEntitiesRules.forEach((rule) => processed = rule.process(processed));
+        afterHtmlEntitiesRules.forEach((rule) => {
+            console.log(rule);
+            
+            processed = rule.process(processed);
+        });
 
         // once it's processed, pass it over to our child components - as props
         // see comments at the top about the child components not being in control of the Edithor™ states

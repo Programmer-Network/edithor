@@ -12,7 +12,7 @@ export default class Utils {
         return result;
     };
 
-    static replaceStartingBlockTag(haystack: string, syntax: string | string[], opening: string, closing: string = opening): string {
+    static replaceStartingBlockTag(haystack: string, syntax: string | string[], opening: string, closing: string = opening, wrapOpening: string = "", wrapClosing: string = ""): string {
         if(typeof syntax === "string")
             syntax = [ syntax as string ];
 
@@ -33,7 +33,7 @@ export default class Utils {
                     continue;
 
                 if(openBlock === false) {
-                    lines[line] = opening + lines[line].substring(encodedSyntax.length + 1);
+                    lines[line] = opening + wrapOpening + lines[line].substring(encodedSyntax.length + 1) + wrapClosing;
 
                     openBlock = true;
                     changed = true;
@@ -41,7 +41,7 @@ export default class Utils {
                 
                 if(openBlock === true) {
                     if(lines[line].startsWith(encodedSyntax))
-                        lines[line] = lines[line].substring(encodedSyntax.length + 1);
+                        lines[line] = wrapOpening + lines[line].substring(encodedSyntax.length + 1) + wrapClosing;
 
                     if(line == lines.length - 1 || !lines[line + 1].startsWith(encodedSyntax)) {
                        lines[line] += closing;
@@ -92,8 +92,6 @@ export default class Utils {
     static replaceWrappedTags(haystack: string, syntax: string | (string | object)[], opening: string, closing: string = opening): string {
         if(typeof syntax === "string")
             syntax = [ syntax as string ];
-        
-        console.log(haystack);
 
         for(let index = 0; index < syntax.length; index++) {
             const currentSyntax = syntax[index];
@@ -108,19 +106,29 @@ export default class Utils {
                 if(!haystack.includes(encodedClosingSyntax))
                     continue;
 
-                console.log(encodedClosingSyntax);
-    
-                const regExp = new RegExp(`${encodedOpeningSyntax}(.*?)${encodedClosingSyntax}`, 'gs');
-                haystack = haystack.replaceAll(regExp, `${opening}$1${closing}`);
+                // \*([^\s*]+(?:\s+[^\s*]+)*)\*
+
+                const regExp = new RegExp(`${encodedOpeningSyntax}(.*?)${encodedClosingSyntax}`, 'gms');
+                haystack = haystack.replaceAll(regExp, (match, group) => {
+                    if(group.trim().length !== group.length)
+                        return match;
+
+                    return `${opening}${group}${closing}`
+                });
             }
             else {
                 const encodedSyntax = this.getEncodedString(currentSyntax);
-
+                
                 if(!haystack.includes(encodedSyntax))
                     continue;
 
-                const regExp = new RegExp(`${encodedSyntax}(.*?)${encodedSyntax}`, 'gs');
-                haystack = haystack.replaceAll(regExp, `${opening}$1${closing}`);
+                const regExp = new RegExp(`${encodedSyntax}(.*?)${encodedSyntax}`, 'gms');
+                haystack = haystack.replaceAll(regExp, (match, group) => {
+                    if(group.trim().length !== group.length)
+                        return match;
+
+                    return `${opening}${group}${closing}`;
+                });
             }
         }
 
