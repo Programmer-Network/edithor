@@ -14,6 +14,7 @@ import EnableBlockquoteElements from "./enable-blockquote-elements";
 import EnableCodeblockElements from "./enable-codeblock-elements";
 import EnableLinkElements from "./enable-link-elements";
 import EnableImageElements from "./enable-image-elements"
+import EnableColorElements from "./enable-color-elements"
 
 // with consideration that default value of unset values will be "enabled" (true)
 // all names should indicate an enablement of the rule where false disables the rule
@@ -40,5 +41,6 @@ export default [
     { key: "enable-codeblock-elements",         value: EnableCodeblockElements          },
     { key: "enable-image-elements",             value: EnableImageElements              },
     { key: "enable-link-elements",              value: EnableLinkElements               },
+    { key: "enable-color-elements",             value: EnableColorElements              },
     { key: "omit-line-comments",                value: OmitLineComments                 },
 ];
