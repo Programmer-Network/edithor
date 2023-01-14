@@ -40,8 +40,13 @@ export default class Edithor extends Component<EdithorProps, EdithorComponentSta
 
     rules: EdithorRule[];
 
+    promise = null;
+
     componentDidMount(): void {
-        Highlighter.getHighlighterAsync().then(() => this.rulesDidUpdate());
+        if(this.promise !== null)
+            return;
+        
+        this.promise = Highlighter.getHighlighterAsync().then(() => this.rulesDidUpdate());
     };
 
     componentDidUpdate(previousProps: Readonly<EdithorProps>): void {
@@ -150,14 +155,12 @@ export default class Edithor extends Component<EdithorProps, EdithorComponentSta
 
                         text = text.substring(index + 3, text.length);
                         index = 0;
-                        
-                        for(let newLineIndex = 0; newLineIndex < text.length; newLineIndex++) {
-                            if(text[newLineIndex] === '\n') {
-                                codeSyntax = text.substring(0, newLineIndex);
-                                text = text.substring(newLineIndex, text.length);
 
-                                break;
-                            }
+                        const newLineIndex = text.indexOf('\n');
+
+                        if(newLineIndex !== -1) {
+                            codeSyntax = text.substring(0, newLineIndex);
+                            text = text.substring(newLineIndex + 1, text.length);
                         }
                     }
                     else {
@@ -193,19 +196,20 @@ export default class Edithor extends Component<EdithorProps, EdithorComponentSta
 
             if(section.codeBlock) {
                 if(section.codeSyntax.length === 0)
-                    section.codeSyntax = "txt";
+                    section.codeSyntax = "plaintext";
 
-                if(!Highlighter.hasSyntax(section.codeSyntax)) {
-                    Highlighter.holdSyntax(section.codeSyntax);
 
-                    missingCodeSyntax.push(section.codeSyntax);
+                if(section.codeSyntax !== "plaintext") {
+                    if(!Highlighter.hasSyntax(section.codeSyntax)) {
+                        if(!missingCodeSyntax.includes(section.codeSyntax))
+                            missingCodeSyntax.push(section.codeSyntax);
 
-                    console.log("missing syntax " + section.codeSyntax);
-
-                    section.codeSyntax = "txt";
+                        section.codeSyntax = "plaintext";
+                    }
+                    else {
+                        section.codeSyntax = Highlighter.getSyntax(section.codeSyntax);
+                    }
                 }
-                else
-                    section.codeSyntax = Highlighter.getSyntax(section.codeSyntax);
             }
 
             let rules = this.state?.rules.filter((rule) => {
@@ -252,9 +256,12 @@ export default class Edithor extends Component<EdithorProps, EdithorComponentSta
         });
 
         if(missingCodeSyntax.length) {
-            Promise.all(missingCodeSyntax.map(async (syntax: string) => {
+            Promise.all(missingCodeSyntax.flatMap(async (syntax: string) => {
                 await Highlighter.getSyntaxAsync(syntax);
-            })).then(() => {
+            }))
+            .then(() => {
+                this.props.debug === "all" && console.debug("Edithor input languages has been loaded.");
+
                 this.inputDidUpdate();
             });
         }

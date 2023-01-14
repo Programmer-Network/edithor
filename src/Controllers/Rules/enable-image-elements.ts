@@ -21,8 +21,6 @@ export default class EnableImageElements implements EdithorRule {
         const regExp = new RegExp(`${exclamationMark}${squareBracketOpen}(.*?)${squareBracketClose}${parenthisOpen}(.*?)(?:${comma}([0-9]+)(?:${comma}([0-9]+))?)?${parenthisClose}`, 'gm');
 
         return input.replaceAll(regExp, (match, text, link, width, height) => {
-            console.debug({ width });
-            
             try {
                 link = Utils.getDecodedString(link);
 
