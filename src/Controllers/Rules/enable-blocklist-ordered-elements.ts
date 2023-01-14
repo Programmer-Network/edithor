@@ -18,7 +18,7 @@ export default class EnableBlocklistOrderedElements implements EdithorRule {
     process(input: string): string {
         let syntax = this.options?.syntax ?? [ '-' ];
         
-        return Utils.replaceStartingBlockTag(input, syntax, `<ul style="list-style-type: decimal">`, "</ul>", "<li>", "</li>");
+        return Utils.replaceStartingBlockTag(input, syntax, `<ol>`, "</ol>", "<li>", "</li>");
     };
 };
 
