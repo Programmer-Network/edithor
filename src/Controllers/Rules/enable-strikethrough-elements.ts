@@ -15,7 +15,7 @@ export default class EnableStrikethroughElements implements EdithorRule {
 
     conditions: EdithorRuleConditions;
 
-    process(input: string): string {
+    parseMarkdown(input: string): string {
         let syntax = this.options?.syntax ?? [ "~~" ];
 
         return Utils.replaceWrappedTags(input, syntax, "<s>", "</s>");

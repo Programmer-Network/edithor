@@ -15,7 +15,7 @@ export default class EnableItalicElements implements EdithorRule {
 
     conditions: EdithorRuleConditions;
     
-    process(input: string): string {
+    parseMarkdown(input: string): string {
         let syntax = this.options?.syntax ?? [ "*", "_" ];
         
         return Utils.replaceWrappedTags(input, syntax, "<i>", "</i>");

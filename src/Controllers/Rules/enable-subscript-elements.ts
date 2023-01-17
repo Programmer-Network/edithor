@@ -15,7 +15,7 @@ export default class EnableSubscriptElements implements EdithorRule {
 
     conditions: EdithorRuleConditions;
 
-    process(input: string): string {
+    parseMarkdown(input: string): string {
         let syntax = this.options?.syntax ?? [ { opening: "<sub>", closing: "</sub>" } ];
 
         return Utils.replaceWrappedTags(input, syntax, "<sub>", "</sub>");

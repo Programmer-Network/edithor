@@ -32,8 +32,7 @@ export default class EnableColorElements implements EdithorRule {
 
     conditions: EdithorRuleConditions;
 
-    process(input: string): string {
-        console.log(input);
+    parseMarkdown(input: string): string {
         return input.replaceAll(regExp, (match) => {
             return `<span is="edithor-color" color="${match}">${match}</span>`;
         });

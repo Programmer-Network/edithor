@@ -21,7 +21,7 @@ export default class EnableCodeblockElements implements EdithorRule {
         beforeHtmlEntities: true
     };
 
-    process(input: string, state?: EdithorRuleState): string {
+    parseMarkdown(input: string, state?: EdithorRuleState): string {
         return Highlighter.getHighlighter().codeToHtml(input, { lang: state?.codeSyntax ?? "txt" }) as string;
     };
 };

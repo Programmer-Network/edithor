@@ -6,7 +6,7 @@ export default class EnableLineBreakElements implements EdithorRule {
         codeBlock: false
     };
 
-    process(input: string): string {
+    parseMarkdown(input: string): string {
         const carriageReturn = `&#${'\r'.charCodeAt(0)};`;
         const lineFeed = `&#${'\n'.charCodeAt(0)};`;
         

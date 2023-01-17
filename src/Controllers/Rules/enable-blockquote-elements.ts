@@ -15,7 +15,7 @@ export default class EnableBlockquoteElements implements EdithorRule {
 
     conditions: EdithorRuleConditions;
 
-    process(input: string): string {
+    parseMarkdown(input: string): string {
         let syntax = this.options?.syntax ?? [ '>' ];
 
         return Utils.replaceStartingBlockTag(input, syntax, "<blockquote>", "</blockquote>");

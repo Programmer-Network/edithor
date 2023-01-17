@@ -25,50 +25,32 @@ export default class Highlighter {
 
     static #syntaxMapping = {};
 
-    static hasSyntax(syntax: string): boolean {
+    static getAliasLanguage(alias: string): string {
         const bundle = BUNDLED_LANGUAGES.find((bundle) => {
-            // Languages are specified by their id, they can also have aliases (i. e. "js" and "javascript")
-            return bundle.id === syntax || bundle.aliases?.includes(syntax);
+            return bundle.id === alias || bundle.aliases?.includes(alias);
         });
 
-        if(!bundle)
-            return false;
+        if(bundle === undefined)
+            return null;
 
-        if(this.#syntaxMapping[bundle.id] !== undefined)
+        return bundle.id;
+    };
+
+    static isLanguageLoaded(language: string): boolean {
+        return this.#highlighter.getLoadedLanguages().includes(language);
+    };
+
+    static async loadLanguageAsync(language: string): Promise<boolean> {
+        const bundle = BUNDLED_LANGUAGES.find((bundle) => {
+            return bundle.id === language || bundle.aliases?.includes(language);
+        });
+
+        if(bundle !== undefined) {
+            await this.#highlighter.loadLanguage(bundle);
+            
             return true;
-
-        if(!this.#highlighter.getLoadedLanguages().includes(bundle.id))
-            return false;
-
-        return false;
-    };
-
-    static getSyntax(syntax: string): string {
-        if(!this.hasSyntax(syntax))
-            throw new Error("You must call Highlighter.getSyntaxAsync() first to ensure the syntax is loaded!");
-
-        return this.#syntaxMapping[syntax];
-    };
-
-    static async getSyntaxAsync(syntax: string): Promise<string> {
-        // Check for the loaded languages, and load the language if it's not loaded yet.
-        if(!this.#highlighter.getLoadedLanguages().includes(syntax)) {
-            // Check if the language is supported by Shiki
-            const bundle = BUNDLED_LANGUAGES.find((bundle) => {
-                // Languages are specified by their id, they can also have aliases (i. e. "js" and "javascript")
-                return bundle.id === syntax || bundle.aliases?.includes(syntax);
-            });
-
-            if(bundle !== undefined) {
-                await this.#highlighter.loadLanguage(bundle);
-
-                this.#syntaxMapping[bundle.id] = bundle.id;
-            }
-            else {
-                this.#syntaxMapping[syntax] = "plaintext";
-            }
         }
 
-        return this.#syntaxMapping[syntax];
+        return false;
     };
 };

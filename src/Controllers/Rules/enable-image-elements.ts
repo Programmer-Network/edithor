@@ -7,7 +7,7 @@ export default class EnableImageElements implements EdithorRule {
         codeBlock: false
     };
 
-    process(input: string): string {
+    parseMarkdown(input: string): string {
         const exclamationMark = Utils.getEncodedCharacter('!');
 
         const squareBracketOpen = Utils.getEncodedCharacter('[');

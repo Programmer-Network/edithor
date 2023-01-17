@@ -4,17 +4,24 @@
   "description": "",
   "main": "dist/index.js",
   "scripts": {
-    "dev": "npx tsc -w"
+    "dev": "npx tsc -w",
+    "sass": "sass --watch src/Styles/Edithor.scss:dist/Edithor.min.css --style compressed"
   },
   "keywords": [],
   "author": "",
   "license": "ISC",
   "devDependencies": {
+    "@fortawesome/fontawesome-svg-core": "^6.2.1",
+    "@fortawesome/free-brands-svg-icons": "^6.2.1",
+    "@fortawesome/free-solid-svg-icons": "^6.2.1",
+    "@fortawesome/react-fontawesome": "^0.2.0",
     "@types/react": "^18.0.26",
+    "@types/sanitize-html": "^2.8.0",
     "react": "^18.2.0",
     "typescript": "^4.9.4"
   },
   "dependencies": {
+    "sanitize-html": "^2.8.1",
     "shiki": "^0.12.1"
   }
 }

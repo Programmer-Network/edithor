@@ -7,7 +7,7 @@ export default class EnableLinkElements implements EdithorRule {
         codeBlock: false
     };
 
-    process(input: string): string {
+    parseMarkdown(input: string): string {
         const squareBracketOpen = Utils.getEncodedCharacter('[');
         const squareBracketClose = Utils.getEncodedCharacter(']');
         

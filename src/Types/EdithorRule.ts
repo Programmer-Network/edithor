@@ -4,5 +4,6 @@ import EdithorRuleState from "./EdithorRuleState"
 export default interface EdithorRule {    
     conditions: EdithorRuleConditions,
 
-    process(input: string, state?: EdithorRuleState): string
+    parseMarkdown(input: string, state?: EdithorRuleState): string,
+    parseHtml?(input: string, elements: Element[]): string
 };

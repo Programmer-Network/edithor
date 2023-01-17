@@ -17,7 +17,7 @@ export default class OmitLineComments implements EdithorRule {
         beforeHtmlEntities: true
     };
 
-    process(input: string): string {
+    parseMarkdown(input: string): string {
         return input.replaceAll(this.options?.regex ?? /\<!--(.*?)-->/gs, '');
     };
 };

@@ -1,7 +1,7 @@
 import { Component } from "react";
 import { EdithorState } from "..";
 
-type RendererProps = {
+export type RendererProps = {
     edithor: EdithorState
 };
 

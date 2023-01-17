@@ -15,7 +15,7 @@ export default class EnableSuperscriptElements implements EdithorRule {
 
     conditions: EdithorRuleConditions;
 
-    process(input: string): string {
+    parseMarkdown(input: string): string {
         let syntax = this.options?.syntax ?? [ { opening: "<sup>", closing: "</sup>" } ];
 
         return Utils.replaceWrappedTags(input, syntax, "<sup>", "</sup>");
