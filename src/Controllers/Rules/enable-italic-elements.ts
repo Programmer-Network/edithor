@@ -20,5 +20,13 @@ export default class EnableItalicElements implements EdithorRule {
         
         return Utils.replaceWrappedTags(input, syntax, "<i>", "</i>");
     };
+
+    parseHtml(input: string, elements: Element[]): string {
+        elements.filter((element) => element.tagName === "I").forEach((element) => {
+            input = input.replace(element.outerHTML, `_${element.innerHTML}_`);
+        });
+
+        return input;
+    };
 };
 

@@ -23,6 +23,8 @@ export default class HtmlParser {
 
         let result = input.innerHTML;
 
+        console.debug("innerHTML", result);
+
         rules.filter((rule) => rule.parseHtml).forEach((rule) => result = rule.parseHtml(result, children));
 
         /*for(let index = 0; index < children.length; index++) {
@@ -31,6 +33,8 @@ export default class HtmlParser {
         }*/
 
         result = this.#sanitize(result);
+
+        console.debug("result", result);
 
         //result = result.replaceAll(/(^[ \t]*\n)/gm, "");
 

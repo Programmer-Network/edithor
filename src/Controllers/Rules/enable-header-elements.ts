@@ -36,7 +36,7 @@ export default class EnableHeaderElements implements EdithorRule {
         const minimumDepth = this.options?.minimumDepth ?? 1;
         const maximumDepth = this.options?.maximumDepth ?? 6;
 
-        elements.filter((element) => element.tagName.length === 2 && element.tagName[0] == 'H').forEach((element) => {
+        elements.filter((element) => element.tagName.length === 2 && element.tagName[0] === 'H').forEach((element) => {
             const depth = parseInt(element.tagName[1]);
 
             if(window.isNaN(depth))

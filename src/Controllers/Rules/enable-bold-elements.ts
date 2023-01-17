@@ -20,5 +20,13 @@ export default class EnableBoldElements implements EdithorRule {
 
         return Utils.replaceWrappedTags(input, syntax, "<b>", "</b>");
     };
+
+    parseHtml(input: string, elements: Element[]): string {
+        elements.filter((element) => element.tagName === "B").forEach((element) => {
+            input = input.replace(element.outerHTML, `**${element.innerHTML}**`);
+        });
+
+        return input;
+    };
 };
 
