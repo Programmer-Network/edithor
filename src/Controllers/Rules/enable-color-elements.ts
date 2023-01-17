@@ -16,7 +16,7 @@ const hash = Utils.getEncodedCharacter('#');
 const paranthesesOpen = Utils.getEncodedCharacter('(');
 const paranthesesClose = Utils.getEncodedCharacter(')');
 
-const hexRegExp     = `(${hash}[A-Fa-f0-9]{3}[A-Fa-f0-9]{0,3})`;
+const hexRegExp     = `(${hash}[A-Fa-f0-9]{3}(?:[A-Fa-f0-9]{3})?)`;
 const hslRegExp     = `((?:hsl(?:a)?|HSL(?:A)?)${paranthesesOpen}[0-9]{1,3}(?:${comma})? [0-9]{1,3}${percentage}(?:${comma})? [0-9]{1,3}${percentage}(?:(?:${comma})? \\d*${dot}?\\d*)?${paranthesesClose})`;
 const rgbRegExp     = `((?:rgb|RGB)${paranthesesOpen}[0-9]{1,3}${comma} [0-9]{1,3}${comma} [0-9]{1,3}${paranthesesClose})`;
 const rgbaRegExp    = `((?:rgba|RGBA)${paranthesesOpen}[0-9]{1,3}${comma} [0-9]{1,3}${comma} [0-9]{1,3}${comma} \\d*${dot}?\\d*${paranthesesClose})`;
