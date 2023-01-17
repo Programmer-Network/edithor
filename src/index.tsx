@@ -172,7 +172,7 @@ export default class Edithor extends Component<EdithorProps, EdithorComponentSta
                     editorCount++;
 
                     if(editorCount > 1)
-                        throw new Error("more than 1 editor will cause desynchronization rn, might fix soon.");
+                        console.warn("more than 1 editor will cause desynchronization rn, might fix soon.");
 
                     const props: EditorProps = {
                         ref: this.editor,
