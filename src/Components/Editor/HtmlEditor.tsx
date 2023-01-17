@@ -13,6 +13,9 @@ export default class HtmlEditor extends Component<CommonEditorProps, CommonEdito
     };
 
     addEdithorTool(tool: EdithorTool): void {
+        if(!tool.getHtml)
+            return;
+            
         this.insertHtmlAtCaret(tool.getHtml(window.getSelection().toString()));
 
         this.updateInput();

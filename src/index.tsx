@@ -177,6 +177,7 @@ export default class Edithor extends Component<EdithorProps, EdithorComponentSta
                     const props: EditorProps = {
                         ref: this.editor,
                         rules: this.rules,
+                        edithor: this.state?.edithor,
                         
                         ...child.props
                     };

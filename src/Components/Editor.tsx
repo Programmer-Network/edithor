@@ -1,7 +1,7 @@
 import React, { Component } from "react";
 
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { faBold, faItalic, faHeading, fa2, fa3, fa4, fa5, faLink, faQuoteLeft, faListUl, faListOl, faCode, faImage } from "@fortawesome/free-solid-svg-icons";
+import { faBold, faItalic, faHeading, fa2, fa3, fa4, fa5, faLink, faQuoteLeft, faListUl, faListOl, faCode, faImage, faTextSlash } from "@fortawesome/free-solid-svg-icons";
 import { faMarkdown } from "@fortawesome/free-brands-svg-icons";
 import { EdithorState } from "..";
 import { HtmlEditor, MarkdownEditor } from "./Editor/"
@@ -40,6 +40,14 @@ export default class Editor extends Component<EditorProps, EditorState> {
         this.setState({ edithor, inputDidUpdate });
     };
 
+    toggleMode() {
+        this.setState({
+            edithor: this.props.edithor,
+
+            markdown: !(this.state?.markdown !== false)
+        });
+    };
+
     render() {
         const tools = [
             { icon: faBold, tool: new BoldElements() },
@@ -67,7 +75,11 @@ export default class Editor extends Component<EditorProps, EditorState> {
                     ))}
 
                     <div className="edithor-rules-right">
-                        <button onClick={() => this.setState({ markdown: !(this.state?.markdown !== false) })}>
+                        <button onClick={() => this.toggleMode()}>
+                            <FontAwesomeIcon icon={faTextSlash}/>
+                        </button>
+                        
+                        <button onClick={() => this.toggleMode()}>
                             <FontAwesomeIcon icon={faMarkdown}/>
                         </button>
                     </div>
