@@ -2,27 +2,31 @@ import EdithorRule from "../../Types/EdithorRule";
 import EdithorRuleConditions from "../../Types/EdithorRuleConditions";
 import Utils from "../Utils";
 
-export default class EnableLinkElements implements EdithorRule {
+export default class EnableImageElements implements EdithorRule {
     conditions: EdithorRuleConditions = {
         codeBlock: false
     };
 
     parseMarkdown(input: string): string {
+        const exclamationMark = Utils.getEncodedCharacter('!');
+
         const squareBracketOpen = Utils.getEncodedCharacter('[');
         const squareBracketClose = Utils.getEncodedCharacter(']');
         
         const parenthisOpen = Utils.getEncodedCharacter('(');
         const parenthisClose = Utils.getEncodedCharacter(')');
 
-        const regExp = new RegExp(`${squareBracketOpen}(.*?)${squareBracketClose}${parenthisOpen}(.*?)${parenthisClose}`, 'gm');
+        const comma = Utils.getEncodedCharacter(',');
 
-        return input.replaceAll(regExp, (match, text, link) => {
+        const regExp = new RegExp(`${exclamationMark}${squareBracketOpen}(.*?)${squareBracketClose}${parenthisOpen}(.*?)(?:${comma}([0-9]+)(?:${comma}([0-9]+))?)?${parenthisClose}`, 'gm');
+
+        return input.replaceAll(regExp, (match, text, link, width, height) => {
             try {
                 link = Utils.getDecodedString(link);
 
                 new URL(link);
 
-                return `<a href="${link}" rel="noreferral" target="_blank">${text}</a>`;
+                return `<img src="${link}" alt="${text}"${width && ` width="${width}"`}${height && ` height="${height}"`}/>`;
             }
             catch {
                 return match;

@@ -1,5 +1,5 @@
 import EdithorRule from "../../Types/EdithorRule";
-import EdithorRuleStates from "../../Types/EdithorRuleStates";
+import EdithorRuleConditions from "../../Types/EdithorRuleConditions";
 import Utils from "../Utils";
 
 type EnableBoldAndItalicElementsOptions = {
@@ -13,9 +13,9 @@ export default class EnableBoldAndItalicElements implements EdithorRule {
         this.options = options;
     };
 
-    conditions: EdithorRuleStates;
+    conditions: EdithorRuleConditions;
 
-    process(input: string): string {
+    parseMarkdown(input: string): string {
         let syntax = this.options?.syntax ?? [ "***" ];
 
         return Utils.replaceWrappedTags(input, syntax, "<b><i>", "</i></b>");

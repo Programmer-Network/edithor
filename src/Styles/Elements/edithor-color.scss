@@ -1,0 +1,18 @@
+span[is="edithor-color"] {
+    color: var(--edithor-color);
+}
+
+span[is="edithor-color"]::before {
+    content: '';
+
+    display: inline-block;
+
+    height: .7em;
+    width: .7em;
+
+    margin: 0 .3em;
+
+    border-radius: 50%;
+
+    background-color: var(--edithor-color);
+}

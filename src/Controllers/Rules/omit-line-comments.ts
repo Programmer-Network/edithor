@@ -1,5 +1,5 @@
 import EdithorRule from "../../Types/EdithorRule";
-import EdithorRuleStates from "../../Types/EdithorRuleStates";
+import EdithorRuleConditions from "../../Types/EdithorRuleConditions";
 
 type OmitLineCommentsOptions = {
     regex?: RegExp
@@ -12,12 +12,12 @@ export default class OmitLineComments implements EdithorRule {
         this.options = options;
     };
 
-    conditions: EdithorRuleStates = {
+    conditions: EdithorRuleConditions = {
         codeBlock: false,
         beforeHtmlEntities: true
     };
 
-    process(input: string): string {
+    parseMarkdown(input: string): string {
         return input.replaceAll(this.options?.regex ?? /\<!--(.*?)-->/gs, '');
     };
 };

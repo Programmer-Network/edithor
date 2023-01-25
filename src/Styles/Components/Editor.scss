@@ -1,0 +1,64 @@
+.edithor-editor {
+    display: flex;
+
+    flex-direction: column;
+
+    border: 1px solid grey;
+
+    .edithor-rules {
+        border-bottom: 1px solid grey;
+
+        top: 0;
+
+        position: sticky;
+
+        background-color: rgb(27, 31, 35);
+
+        display: flex;
+
+        flex-direction: row;
+        flex-wrap: wrap;
+
+        button {
+            color: inherit;
+    
+            background: none;
+            
+            border: none;
+    
+            cursor: pointer;
+
+            padding: .5em;
+
+            font-size: 1.2em;
+        }
+
+        .edithor-rules-right {
+            margin-left: auto;
+        }
+    }
+
+    div.edithor-editable,
+    textarea.edithor-editable {
+        flex: 1;
+
+        padding: .5em;
+
+        overflow: auto;
+
+        resize: vertical;
+
+        min-height: 12em;
+
+        &:focus {
+            outline: none;
+        }
+    }
+
+    textarea.edithor-editable {
+        background: initial;
+        color: inherit;
+
+        border: none;
+    }
+}

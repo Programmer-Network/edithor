@@ -1,10 +1,13 @@
-import React, { Component, ReactNode } from "react";
-import Editor from "./Components/Editor";
-import Renderer from "./Components/Renderer";
+import React, { Component, ReactElement, RefObject } from "react";
+import Editor, { EditorProps } from "./Components/Editor";
+import Renderer, { RendererProps } from "./Components/Renderer";
 import EdithorRule from "./Types/EdithorRule";
 import Rules from "./Controllers/Rules";
+import Highlighter from "./Controllers/Highlighter";
+import { MarkdownParser } from "./Controllers/Parser";
 
 import "./polyfill.js";
+import "./Edithor.min.css";
 
 type EdithorProps = {
     input: string,
@@ -16,11 +19,7 @@ type EdithorProps = {
 
 type EdithorComponentState = {
     // this is the only object that the children have access to
-    edithor: EdithorState,
-
-    // these are states that our child components have no use of knowing about
-    // e.g. they should not rely on any rules of any kind
-    rules: EdithorRule[]
+    edithor: EdithorState
 };
 
 // the state we're refering to is not the React component state, this Edithor component should not
@@ -37,10 +36,23 @@ export default class Edithor extends Component<EdithorProps, EdithorComponentSta
     static Editor = Editor;
     static Renderer = Renderer;
 
+    promise = null;
+
+    editor: RefObject<Editor>;
+
     rules: EdithorRule[];
 
+    constructor(props: any) {
+        super(props);
+
+        this.editor = React.createRef();
+    };
+    
     componentDidMount(): void {
-        this.rulesDidUpdate();
+        if(this.promise !== null)
+            return;
+        
+        this.promise = Highlighter.getHighlighterAsync().then(() => this.rulesDidUpdate(this.props.input));
     };
 
     componentDidUpdate(previousProps: Readonly<EdithorProps>): void {
@@ -55,11 +67,11 @@ export default class Edithor extends Component<EdithorProps, EdithorComponentSta
         else if(previousProps.input !== this.props.input) {
             this.props.debug === "all" && console.warn("Edithor input has been changed.");
 
-            this.inputDidUpdate();
+            this.inputDidUpdate(this.props.input, true);
         }
     };
 
-    rulesDidUpdate() {
+    rulesDidUpdate(input?: string) {
         const timestamp = performance.now();
 
         const filteredRules: { key, value }[] = Rules.filter(({ key, value }) => {
@@ -94,76 +106,56 @@ export default class Edithor extends Component<EdithorProps, EdithorComponentSta
         // intialize the rules and then emulate an input change to cause a refresh in the child components
         // because the child components are not aware of the rules.
 
-        this.setState({
-            rules: filteredRules.map(({ key, value }) => {
-                let options = null;
-                
-                if(this.props.rules) {
-                    if(typeof this.props.rules[key] === "object")
-                        options = this.props.rules[key];
-                    else 
-                        options = this.props.rules["*"] ?? null;
-                }
-
-                return new value(options);
-            })
-        }, () => {
-            this.props.debug === "all" && console.debug("Edithor processing rules:", performance.now() - timestamp);
+        this.rules = filteredRules.map(({ key, value }) => {
+            let options = null;
             
-            this.inputDidUpdate();
+            if(this.props.rules) {
+                if(typeof this.props.rules[key] === "object")
+                    options = this.props.rules[key];
+                else 
+                    options = this.props.rules["*"] ?? null;
+            }
+
+            return new value(options);
         });
+
+        this.props.debug === "all" && console.debug("Edithor processing rules:", performance.now() - timestamp);
+        
+        this.inputDidUpdate(input);
     };
 
-    inputDidUpdate() {
+    inputDidUpdate(newInput?: string, refreshEditor?: boolean) {
+        const raw: string = newInput ?? this.state.edithor?.raw;
+
         const timestamp = performance.now();
 
-        const raw = this.props.input;
+        const sections = MarkdownParser.getSections(raw);
+        const processed = MarkdownParser.parse(sections, this.rules);
 
-        let processed:string = raw;
+        if(processed.missingLanguages.length) {
+            Promise.all(processed.missingLanguages.flatMap(async (language: string) => {
+                await Highlighter.loadLanguageAsync(language);
+            }))
+            .then(() => {
+                this.props.debug === "all" && console.debug("Edithor input languages has been loaded.");
 
-        // here we would implement our custom logic to set the "rules" state
-        // e.g. define that we're in a code block now
-
-        // for safety, I think the process should be like this:
-        // eject the code blocks (e.g. ```(.*?)```) and process the sections individually
-        // e.g. first everything up to the first code block opening, then the code block itself, then everything below
-        //      the code block closing, the code block obviously being N
-        // this is only a special scenario since code blocks contains code, unlike the rest of the content which is just text and markup
-
-        // this is what the "difficult" task will be, mostly due to performance concerns
-
-        const beforeHtmlEntitiesRules = this.state?.rules.filter((rule) => !!rule.conditions?.beforeHtmlEntities);
-        beforeHtmlEntitiesRules.forEach((rule) => processed = rule.process(processed));
-
-        // this turns _every non-digit/English alphabetic_ character into a HTML entity
-        // this is perfectly reasonable. it will not affect network bandwidth - this is client code
-        // and it's a perfect XSS prevention.
-
-        // in all our rules, because of this, we use the HTML entities to decode character
-        // such as line feeds (\n) and carriage returns (\r)
-
-        processed = processed.replaceAll(
-            /[^0-9A-Za-z ]/g,
-            c => "&#" + c.charCodeAt(0) + ";"
-        );
-
-        const afterHtmlEntitiesRules = this.state?.rules.filter((rule) => !rule.conditions?.beforeHtmlEntities);
-        afterHtmlEntitiesRules.forEach((rule) => {
-            console.log(rule);
-            
-            processed = rule.process(processed);
-        });
+                this.inputDidUpdate();
+            });
+        }
 
         // once it's processed, pass it over to our child components - as props
         // see comments at the top about the child components not being in control of the Edithor™ states
 
         this.setState({
             edithor: {
-                raw: this.props.input,
-                processed
+                raw: raw,
+                processed: processed.text
             }
         }, () => {
             this.props.debug === "all" && console.debug("Edithor processing input:", performance.now() - timestamp);
+
+            if(this.editor?.current && (!this.editor.current.hasEdithor() || refreshEditor))
+                this.editor.current.setEdithor(this.state.edithor, (input) => this.inputDidUpdate(input));
         });
     };
 
@@ -172,9 +164,30 @@ export default class Edithor extends Component<EdithorProps, EdithorComponentSta
         if(!this.state)
             return null;
 
+        let editorCount: number = 0;
+
         const children = React.Children.map(this.props.children, (child) => {
-            if(React.isValidElement(child))
-                return React.cloneElement(child, { edithor: this.state.edithor } as any);
+            if(React.isValidElement(child)) {
+                if(child.type === Editor) {
+                    editorCount++;
+
+                    if(editorCount > 1)
+                        console.warn("more than 1 editor will cause desynchronization rn, might fix soon.");
+
+                    const props: EditorProps = {
+                        ref: this.editor,
+                        rules: this.rules,
+                        edithor: this.state?.edithor,
+                        
+                        ...child.props
+                    };
+
+                    return React.cloneElement(child, props);
+                }
+
+                if(child.type === Renderer)
+                    return React.cloneElement(child, { edithor: this.state.edithor } as RendererProps);
+            }
             
             return child;
         });

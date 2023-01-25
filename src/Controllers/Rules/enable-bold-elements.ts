@@ -1,5 +1,5 @@
 import EdithorRule from "../../Types/EdithorRule";
-import EdithorRuleStates from "../../Types/EdithorRuleStates";
+import EdithorRuleConditions from "../../Types/EdithorRuleConditions";
 import Utils from "../Utils";
 
 type EnableBoldElementsOptions = {
@@ -13,12 +13,20 @@ export default class EnableBoldElements implements EdithorRule {
         this.options = options;
     };
 
-    conditions: EdithorRuleStates;
+    conditions: EdithorRuleConditions;
 
-    process(input: string): string {
+    parseMarkdown(input: string): string {
         let syntax = this.options?.syntax ?? [ "**" ];
 
         return Utils.replaceWrappedTags(input, syntax, "<b>", "</b>");
+    };
+
+    parseHtml(input: string, elements: Element[]): string {
+        elements.filter((element) => element.tagName === "B").forEach((element) => {
+            input = input.replace(element.outerHTML, `**${element.innerHTML}**`);
+        });
+
+        return input;
     };
 };
 

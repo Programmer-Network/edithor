@@ -1,4 +1,4 @@
-export default interface EdithorRuleStates {
+export default interface EdithorRuleConditions {
     codeBlock?: boolean,
     beforeHtmlEntities?: boolean
 };

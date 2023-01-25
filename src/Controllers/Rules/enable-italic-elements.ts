@@ -1,5 +1,5 @@
 import EdithorRule from "../../Types/EdithorRule";
-import EdithorRuleStates from "../../Types/EdithorRuleStates";
+import EdithorRuleConditions from "../../Types/EdithorRuleConditions";
 import Utils from "../Utils";
 
 type EnableItalicElementsOptions = {
@@ -13,12 +13,20 @@ export default class EnableItalicElements implements EdithorRule {
         this.options = options;
     };
 
-    conditions: EdithorRuleStates;
+    conditions: EdithorRuleConditions;
     
-    process(input: string): string {
+    parseMarkdown(input: string): string {
         let syntax = this.options?.syntax ?? [ "*", "_" ];
         
         return Utils.replaceWrappedTags(input, syntax, "<i>", "</i>");
+    };
+
+    parseHtml(input: string, elements: Element[]): string {
+        elements.filter((element) => element.tagName === "I").forEach((element) => {
+            input = input.replace(element.outerHTML, `_${element.innerHTML}_`);
+        });
+
+        return input;
     };
 };
 
