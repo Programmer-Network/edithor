@@ -146,17 +146,21 @@ export default class Edithor extends Component<EdithorProps, EdithorComponentSta
         // once it's processed, pass it over to our child components - as props
         // see comments at the top about the child components not being in control of the Edithor™ states
 
+        const edithor = {
+            raw: raw,
+            processed: processed.text
+        };
+
         this.setState({
-            edithor: {
-                raw: raw,
-                processed: processed.text
-            }
+            edithor   
         }, () => {
             this.props.debug === "all" && console.debug("Edithor processing input:", performance.now() - timestamp);
 
             if(this.editor?.current && (!this.editor.current.hasEdithor() || refreshEditor))
                 this.editor.current.setEdithor(this.state.edithor, (input) => this.inputDidUpdate(input));
         });
+
+        return edithor;
     };
 
     render() {

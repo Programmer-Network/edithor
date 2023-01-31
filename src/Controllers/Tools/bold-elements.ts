@@ -6,6 +6,6 @@ export default class BoldElements implements EdithorTool {
     };
 
     getHtml(text: string): string {
-        return `<b>${text}</b>`;
+        return `<b>${text.length ? text : "Bold"}</b>`;
     };
 };

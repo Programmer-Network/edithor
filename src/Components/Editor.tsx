@@ -8,6 +8,7 @@ import { HtmlEditor, MarkdownEditor } from "./Editor/"
 import BoldElements from "../Controllers/Tools/bold-elements";
 import ItalicElements from "../Controllers/Tools/ItalicElements";
 import EdithorRule from "../Types/EdithorRule";
+import HeaderElements from "../Controllers/Tools/HeaderElements";
 
 export type EditorProps = {
     edithor: EdithorState,
@@ -52,11 +53,11 @@ export default class Editor extends Component<EditorProps, EditorState> {
         const tools = [
             { icon: faBold, tool: new BoldElements() },
             { icon: faItalic, tool: new ItalicElements() },
-            { icon: faHeading },
-            { icon: fa2 },
-            { icon: fa3 },
-            { icon: fa4 },
-            { icon: fa5 },
+            { icon: faHeading, tool: new HeaderElements(1) },
+            { icon: fa2, tool: new HeaderElements(2) },
+            { icon: fa3, tool: new HeaderElements(3) },
+            { icon: fa4, tool: new HeaderElements(4) },
+            { icon: fa5, tool: new HeaderElements(5) },
             { icon: faLink },
             { icon: faQuoteLeft },
             { icon: faListUl },

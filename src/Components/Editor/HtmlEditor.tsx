@@ -15,12 +15,67 @@ export default class HtmlEditor extends Component<CommonEditorProps, CommonEdito
     addEdithorTool(tool: EdithorTool): void {
         if(!tool.getHtml)
             return;
-            
-        this.insertHtmlAtCaret(tool.getHtml(window.getSelection().toString()));
 
-        this.updateInput();
+        const selection = window.getSelection().toString();
+        
+        let trim = selection.trimStart();
+        const trimmedStart = selection.substring(0, selection.length - trim.length);
+
+        trim = selection.trimEnd();
+        const trimmedEnd = selection.substring(trim.length);
+
+        const middle = selection.substring(trimmedStart.length, selection.length - trimmedEnd.length);
+
+        const element = tool.getHtml(middle);
+
+        this.insertHtmlAtCaret(trimmedStart + element + trimmedEnd);
+
+        const result = this.updateInput();
+
+        if(result === undefined)
+            console.warn("updateInput is undefined")
+        else
+            this.editor.current.innerHTML = result.processed;
 
         //activeElement.innerHTML = innerHtml[0] + tool.getHtml(innerHtml[1]) + innerHtml[2];
+    };
+
+    getSelectionHtml() {
+        var html = "";
+        if (typeof window.getSelection != "undefined") {
+            var sel = window.getSelection();
+            if (sel.rangeCount) {
+                var container = document.createElement("div");
+                for (var i = 0, len = sel.rangeCount; i < len; ++i) {
+                    container.appendChild(sel.getRangeAt(i).cloneContents());
+                }
+                html = container.innerHTML;
+            }
+        } else if (typeof document["selection"] != "undefined") {
+            if (document["selection"].type == "Text") {
+                html = document["selection"].createRange().htmlText;
+            }
+        }
+        return html;
+    };
+
+    getTrimmedWindowSelectionRange() {
+        const sel = window.getSelection();
+        const text = sel.toString();
+        const range = sel.getRangeAt(0);
+
+        const startOffset = text.length - text.trimStart().length;
+        const endOffset = text.length - text.trimEnd().length;
+
+        if (startOffset) {
+            range.setStart(range.startContainer, range.startOffset + startOffset);
+        }
+
+        if (endOffset) {
+            range.setEnd(range.endContainer, range.endOffset - endOffset);
+        }
+
+        return sel;
     };
 
     getCurrentElement(): HTMLElement {
@@ -109,7 +164,22 @@ export default class HtmlEditor extends Component<CommonEditorProps, CommonEdito
 
         const input = HtmlParser.parse(element, this.props.rules);
 
-        this.props.inputDidUpdate(input);
+        return this.props.inputDidUpdate(input);
+    };
+
+    onKeyDown(event) {
+        if(event.key === "Tab") {
+            event.preventDefault();
+
+            const start = event.target.selectionStart;
+            const end = event.target.selectionEnd;
+
+            const tab = "&nbsp;&nbsp;&nbsp;&nbsp;";
+
+            this.insertHtmlAtCaret(tab);
+
+            event.target.selectionStart = event.target.selectionEnd = start + 4;
+        }
     };
 
     onKeyUp(event) {
@@ -126,10 +196,8 @@ export default class HtmlEditor extends Component<CommonEditorProps, CommonEdito
                 ref={this.editor}
                 className="edithor-editable"
                 contentEditable={true}
+                onKeyDown={(event) => this.onKeyDown(event)}
                 onKeyUp={(event) => this.onKeyUp(event)}
-                dangerouslySetInnerHTML={{
-                    __html: this.props.input
-                }}
                 />
         );
     };

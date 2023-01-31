@@ -23,7 +23,7 @@ export default class EnableItalicElements implements EdithorRule {
 
     parseHtml(input: string, elements: Element[]): string {
         elements.filter((element) => element.tagName === "I").forEach((element) => {
-            input = input.replace(element.outerHTML, `_${element.innerHTML}_`);
+            input = input.replaceAll(element.outerHTML, `_${element.innerHTML}_`);
         });
 
         return input;

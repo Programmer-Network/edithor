@@ -23,22 +23,13 @@ export default class HtmlParser {
 
         let result = input.innerHTML;
 
-        console.debug("innerHTML", result);
+        console.debug("HTMLParser: innerHTML", result);
 
         rules.filter((rule) => rule.parseHtml).forEach((rule) => result = rule.parseHtml(result, children));
 
-        /*for(let index = 0; index < children.length; index++) {
-            if(children[index].tagName == "H1")
-                result = result.replace(children[index].outerHTML, `# ${this.#sanitize(children[index].innerHTML)}\n`);
-        }*/
-
         result = this.#sanitize(result);
 
-        console.debug("result", result);
-
-        //result = result.replaceAll(/(^[ \t]*\n)/gm, "");
-
-        //const result = input.innerHTML.replaceAll(children[children.length - 1].outerHTML, "tes");
+        console.debug("HTMLParser: markdown", result);
 
         return result;
     };
